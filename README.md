@@ -1,5 +1,22 @@
 # Micah's homelab setup
 
+## Images
+Images are x86_64 only.
+
+### Alpine Linux
+
+`public.ecr.aws/s3t5k9h7/alpine:3.13.0`
+
+### Samba
+
+`public.ecr.aws/s3t5k9h7/samba:4.13.3`
+
+### Avahi
+
+`public.ecr.aws/s3t5k9h7/avahi:0.8`
+
+## Project Plan
+
 Started
 * Samba Time Machine backup server
 * Avahi autodiscovery
