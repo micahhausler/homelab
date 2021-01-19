@@ -1,0 +1,32 @@
+version: '3.4'
+services:
+ avahi:
+   container_name: avahi
+   #image: micahhausler/avahi:0.8
+   build:
+     context: ./avahi
+   network_mode: host
+   restart: unless-stopped
+ samba:
+   container_name: samba
+   #image: micahhausler/samba
+   build:
+     context: ./samba
+   environment:
+     TZ: 'US/Pacific'
+   #networks:
+   #  - default
+   ports:
+     - "137:137/udp"
+     - "138:138/udp"
+     - "139:139/tcp"
+     - "445:445/tcp"
+   #read_only: true
+   tmpfs:
+     - /tmp
+   restart: unless-stopped
+   stdin_open: true
+   tty: true
+   #volumes:
+   #- /home/alex/tmbackup/data:/backup:z
+   #command: '-s "Time Machine Backup;/backup;yes;no" -u "alex;alexspasswd"'
