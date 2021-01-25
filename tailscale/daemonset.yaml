@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app: tailscale
+  name: tailscale
+  namespace: default
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: tailscale
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: tailscale
+    spec:
+      containers:
+      - env:
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        image: public.ecr.aws/s3t5k9h7/tailscale:v1.2.10
+        imagePullPolicy: IfNotPresent
+        name: tailscale
+        resources: {}
+        securityContext:
+          privileged: true
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /var/lib/tailscale
+          name: var-lib-tailscale
+        - mountPath: /run/tailscale
+          name: run-tailscale
+      dnsPolicy: ClusterFirst
+      hostNetwork: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      priorityClassName: system-node-critical
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccountName: default
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: CriticalAddonsOnly
+        operator: Exists
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /run/tailscale
+          type: DirectoryOrCreate
+        name: run-tailscale
+      - hostPath:
+          path: /var/lib/tailscale
+          type: DirectoryOrCreate
+        name: var-lib-tailscale
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+    type: RollingUpdate

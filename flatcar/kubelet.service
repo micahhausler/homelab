@@ -1,0 +1,21 @@
+[Unit]
+Description=kubelet: The Kubernetes Node Agent
+Documentation=https://kubernetes.io/docs/
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+#Environment=--pod-infra-container-image=$PAUSE_CONTAINER
+ExecStart=/opt/bin/kubelet \
+    --kubeconfig /etc/kubernetes/kubelet.conf \
+    --config /var/lib/kubelet/config.yaml \
+    --container-runtime docker \
+    $KUBELET_ARGS $KUBELET_KUBEADM_ARGS
+#--config /etc/kubernetes/kubelet/kubelet-config.json
+Restart=always
+StartLimitInterval=0
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

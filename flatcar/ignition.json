@@ -4,36 +4,7 @@
   },
   "storage": {
     "files": [
-      {
-        "path": "/etc/containerd/config.toml",
-        "filesystem": "root",
-        "mode": 384,
-        "contents": {
-          "inline": ""
-        }
-      },
-      {
-        "filesystem": "root",
-        "path": "/etc/hostname",
-        "mode": 420,
-        "contents": {
-          "source": "data:,nuc1"
-        }
-      }
-    ]
-  },
-  "systemd": {
-    "units": [
-      {
-        "name": "containerd.service",
-        "enabled": true,
-        "dropins": [
-          {
-            "name": "10-use-custom-config.conf",
-            "contents": "[Service]\nEnvironment=CONTAINERD_CONFIG=/etc/containerd/config.toml\nExecStart=\nExecStart=/usr/bin/env PATH=$${TORCX_BINDIR}:$${PATH} $${TORCX_BINDIR}/containerd --config $${CONTAINERD_CONFIG}\n"
-          }
-        ]
-      }
+      { "filesystem": "root", "path": "/etc/hostname", "mode": 420, "contents": { "source": "data:,nuc1" } }
     ]
   },
   "passwd": {
