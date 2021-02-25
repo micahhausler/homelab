@@ -1,0 +1,14 @@
+classes:
+- name: local-storage
+  storageClass: true
+  hostDir: /mnt/csi-local-storage
+  volumeMode: Filesystem
+  #volumeMode: Block
+  blockCleanerCommand:
+     - "/scripts/shred.sh"
+     - "2"
+
+daemonset:
+  tolerations:
+    - key: node-role.kubernetes.io/master
+      effect: NoSchedule

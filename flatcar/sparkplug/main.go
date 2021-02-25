@@ -16,6 +16,12 @@ func main() {
 	hostname := flag.String("hostname", "", "Hostname to set for the config")
 	metadataScript := flag.String("metadata-script", "", "Path to metadata shell script source")
 	indent := flag.Bool("indent", true, "Indent output with 2 spaces")
+	mountDevice := flag.String("mount-device", "", "The device to add to mounts and filesystems. An empty value omits partitions and filesystems")
+	mountPartitionCount := flag.Int("mount-partiition-count", 2, "The number of partitions to create")
+	mountPartitionSize := flag.Int("mount-partition-size", 500, "The size (in GB) of partitions to create")
+	mountRoot := flag.String("mount-root", "/mnt/csi-local-storage", "The directory to mount secondary partitions into")
+	fsType := flag.String("fs-type", "ext4", "The filesystem type")
+
 	flag.Parse()
 
 	opts := []spark.ConfigOpt{}
@@ -27,6 +33,16 @@ func main() {
 	}
 	if *user != "" {
 		opts = append(opts, spark.NewUserOpt(*user, *groups, *authorizedKeys))
+	}
+
+	if *mountDevice != "" {
+		opts = append(opts, spark.NewDiskOpt(
+			*mountRoot,
+			*fsType,
+			*mountDevice,
+			*mountPartitionCount,
+			*mountPartitionSize,
+		))
 	}
 
 	config, err := spark.NewConfig(opts...)

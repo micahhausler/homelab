@@ -1,0 +1,81 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-server
+  namespace: default
+  labels:
+    app: minecraft-server
+spec:
+  type: NodePort
+  ports:
+    - port: 25565
+      nodePort: 30565
+  selector:
+    app: minecraft-server
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minecraft
+  namespace: default
+spec:
+  serviceName: "minecraft-server"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minecraft-server
+  template:
+    metadata:
+      labels:
+        app: minecraft-server
+    spec:
+      containers:
+      - name: minecraft-server
+        image: itzg/minecraft-server:latest
+        resources:
+          limits:
+            memory: 8Gi
+          requests:
+            memory: 8Gi
+        env:
+          - name: MEMORY
+            value: 8G
+          - name:  EULA
+            value: 'TRUE'
+          - name: OPS
+            value: micahhausler
+          - name: MODE
+            value: survival
+          - name: MOTD
+            value: Welcome to Micah's Minecraft Server!
+        ports:
+        - containerPort: 25565
+          name: minecraft
+        volumeMounts:
+          - name: minecraft-data-vol
+            mountPath:  /data
+        readinessProbe:
+          exec:
+            command:
+            - mcstatus
+            - 127.0.0.1
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 30
+        livenessProbe:
+          exec:
+            command:
+            - mcstatus
+            - 127.0.0.1
+            - ping
+          initialDelaySeconds: 30
+          periodSeconds: 30
+  volumeClaimTemplates:
+  - metadata:
+      name: minecraft-data-vol
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "local-storage"
+      resources:
+        requests:
+          storage: 20Gi
