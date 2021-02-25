@@ -1,5 +1,5 @@
-BASE_IMAGE?=public.ecr.aws/s3t5k9h7/alpine:3.13.0
-IMAGE_REPO?=public.ecr.aws/s3t5k9h7/tailscale
+BASE_IMAGE?=public.ecr.aws/micahhausler/alpine:3.13.0
+IMAGE_REPO?=public.ecr.aws/micahhausler/tailscale
 IMAGE_TAG?=v1.2.10
 IMAGE?=${IMAGE_REPO}:${IMAGE_TAG}
 

@@ -5,7 +5,7 @@ ALPINE_TAR=alpine-minirootfs-${ALPINE_VERSION}.${ALPINE_POINT}-${PLATFORM}.tar.g
 URL=https://dl-cdn.alpinelinux.org/alpine/v${ALPINE_VERSION}/releases/${PLATFORM}/${ALPINE_TAR}
 SHA_URL=${URL}.sha256
 
-IMAGE_REPO?=public.ecr.aws/s3t5k9h7/alpine
+IMAGE_REPO?=public.ecr.aws/micahhausler/alpine
 IMAGE?=${IMAGE_REPO}:${ALPINE_VERSION}.${ALPINE_POINT} 
 
 ${ALPINE_TAR}.sha256:

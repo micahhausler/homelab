@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=public.ecr.aws/s3t5k9h7/alpine:3.13.0
+ARG BASE_IMAGE=public.ecr.aws/micahhausler/alpine:3.13.0
 FROM $BASE_IMAGE
 
 MAINTAINER Micah Hausler <hausler.m@gmail.com>
