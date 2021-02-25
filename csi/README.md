@@ -4,7 +4,7 @@ I've spec'd out my NUC with a [1TB Western Digital SATA SSD][1tb-m2], which gets
 assigned the device `/dev/sda`. I use [Ignition][ignition-storage] to partition,
 create filesystems, and mount the device.
 
-[1tb-m2]: https://www.newegg.com/samsung-860-evo-series-1tb/p/N82E16820147673?Item=N82E16820147673)
+[1tb-m2]: https://www.newegg.com/samsung-860-evo-series-1tb/p/N82E16820147673?Item=N82E16820147673
 [ignition-storage]: https://kinvolk.io/docs/flatcar-container-linux/latest/setup/storage/mounting-storage/
 
 ## Manual Disk partitioning
