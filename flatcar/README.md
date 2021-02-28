@@ -2,18 +2,17 @@
 
 ## To document
 
-* Disable UEFI boot on Intel NUC 10th gen ([Intel
-    Docs](https://www.intel.com/content/www/us/en/support/articles/000032529/intel-nuc.html))
-* Install steps on baremetal (Basically use [flatcar
-    documented method](https://kinvolk.io/docs/flatcar-container-linux/latest/installing/bare-metal/installing-to-disk/)
-    from an ubuntu install USB stick shell)
+* Disable UEFI boot on Intel NUC 10th gen ([Intel Docs][intel docs])
+* Install steps on baremetal (Basically use [flatcar documented
+  method][flatcar-baremetal] from an Ubuntu install USB stick shell)
+
+[intel docs]: https://www.intel.com/content/www/us/en/support/articles/000032529/intel-nuc.html
+[flatcar-baremetal]: https://kinvolk.io/docs/flatcar-container-linux/latest/installing/bare-metal/installing-to-disk/
 
 ## TODOs
 
-- [ ]. Research using [AWS ACM Private
-   CA](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-private.html)
-   for enabling SecureBoot ([Debian
-   docs](https://wiki.debian.org/SecureBoot#What_is_UEFI.3F)
+- [ ]. Research using [AWS ACM Private CA][acm-pca]
+   for enabling SecureBoot ([Debian docs][debian-secure-boot]
 - [x] Write metadata gather script that writes to files on disk
       - [x] Get ipv4 addr
       - [x] Get ipv6 addr
@@ -23,11 +22,8 @@
 - [ ] Get `kube{let,ctl,adm}`, write to `/opt/bin/`
 - [ ] Get CNI binaries, write to `/opt/cni/bin`
 - [ ] Write Kubelet systemd unit
-    - [ ] Refer to EKS AMI
-       [kubelet.service](https://github.com/awslabs/amazon-eks-ami/blob/master/files/kubelet.service)
-       and
-       [bootstrap.sh](https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh)
-       for args
+    - [ ] Refer to EKS AMI [kubelet.service][kubelet.service] and
+       [bootstrap.sh][bootstrap.sh] for args
 - [x] Compile all units into ignition (and a script/tool that gathers them? A CDK
     for ignition would be sweet)
     - [x] See [sparkplug](./sparkplug/)
@@ -35,7 +31,14 @@
    work). Maybe source above metadata + one or two args?
 - [ ] Write kubeadm templated config
 
+[acm-pca]: https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-request-private.html
+[debian-secure-boot]: https://wiki.debian.org/SecureBoot#What_is_UEFI.3F
+[kubelet.service]: https://github.com/awslabs/amazon-eks-ami/blob/master/files/kubelet.service
+[bootstrap.sh]: https://github.com/awslabs/amazon-eks-ami/blob/master/files/bootstrap.sh
 
+## Ignition
+
+To re-run ignition with a new configuration on an already-running machine, 
 
 ## Kubernetes
 

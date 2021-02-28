@@ -1,0 +1,70 @@
+persistence:
+  type: pvc
+  enabled: false
+  storageClassName: local-storage
+
+adminUser: hausler.m@gmail.com
+
+#env:
+#  AWS_REGION: us-west-2
+#  AWS_DEFAULT_REGION: us-west-2
+#  AWS_SDK_LOAD_CONFIG: 1
+
+sidecar:
+  dashboards:
+    enabled: true
+    searchNamespace: default
+
+service:
+  nodePort: 30333
+  type: NodePort
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: '3000'
+    prometheus.io/scrape: 'true'
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+    - name: Prometheus
+      type: prometheus
+      access: proxy
+      orgId: 1
+      url: http://prometheus-server.default.svc:80
+      isDefault: true
+      version: 1
+      editable: true
+    #- name: CloudWatch
+    #  type: cloudwatch
+    #  access: proxy
+    #  orgId: 1
+    #  isDefault: false
+    #  jsonData:
+    #    defaultRegion: "us-west-2"
+    #  version: 1
+    #  editable: true
+
+grafana.ini:
+  server:
+    root_url: "http://192.168.10.203:30333/"
+    serve_from_sub_path: false
+      #security:
+      #  cookie_secure: true
+      #  cookie_samesite: strict
+  metrics:
+    enabled: true
+  users:
+    auto_assign_org_role: Editor
+  #auth.proxy:
+  #  enabled: true
+  #  header_name: X-Amzn-Oidc-Identity
+  #  header_property: email
+
+readinessProbe:
+  httpGet:
+    path: /api/health
+
+livenessProbe:
+  httpGet:
+    path: /api/health

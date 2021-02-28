@@ -2,24 +2,28 @@ package spark
 
 import (
 	"fmt"
-	"github.com/kinvolk/ignition/config/v2_2/types"
 	"path/filepath"
+
+	"github.com/kinvolk/ignition/config/v2_2/types"
 )
 
-func partitionDisk(device string, partitionCount, partitionSize int) types.Disk {
+func partitionDisk(device string, partitionSizes []int) types.Disk {
 	disk := types.Disk{
 		Device:    device,
 		WipeTable: true,
 	}
 	parts := []types.Partition{}
 
-	for i := 0; i < partitionCount; i++ {
+	var start = 0
+	for i, pSize := range partitionSizes {
+		pSizeGB := 1 << 30 * pSize
 		part := types.Partition{
-			Start:  i * partitionSize,
+			Start:  start,
 			Number: i + 1,
-			Size:   partitionSize,
+			Size:   pSizeGB,
 		}
 		parts = append(parts, part)
+		start += pSizeGB
 	}
 	disk.Partitions = parts
 	return disk
@@ -28,7 +32,6 @@ func partitionDisk(device string, partitionCount, partitionSize int) types.Disk 
 func fileSystems(mountRoot, fstype, device string, partitionCount int) []types.Filesystem {
 	fss := []types.Filesystem{}
 	for i := 0; i < partitionCount; i++ {
-
 		fss = append(fss, types.Filesystem{
 			Path: strPtr(filepath.Join(mountRoot, fmt.Sprintf("p%d", i+1))),
 			Name: fmt.Sprintf("local-storage-%d", i+1),
@@ -42,13 +45,13 @@ func fileSystems(mountRoot, fstype, device string, partitionCount int) []types.F
 	return fss
 }
 
-func NewDiskOpt(mountRoot, fstype, device string, partitionCount, partitionSize int) ConfigOpt {
+func NewDiskOpt(mountRoot, fstype, device string, partitionSizes []int) ConfigOpt {
 	return ConfigOpt(func(config *types.Config) error {
-		disk := partitionDisk(device, partitionCount, partitionSize)
+		disk := partitionDisk(device, partitionSizes)
 		disks := config.Storage.Disks
 		config.Storage.Disks = append(disks, disk)
 
-		config.Storage.Filesystems = append(config.Storage.Filesystems, fileSystems(mountRoot, fstype, device, partitionCount)...)
+		config.Storage.Filesystems = append(config.Storage.Filesystems, fileSystems(mountRoot, fstype, device, len(partitionSizes))...)
 
 		return nil
 	})

@@ -10,17 +10,21 @@ import (
 )
 
 func main() {
+	indent := flag.Bool("indent", true, "Indent output with 2 spaces")
+
 	user := flag.String("user", "core", "username to create")
 	groups := flag.StringSliceP("groups", "g", []string{"sudo", "docker"}, "Groups to add to the user")
 	authorizedKeys := flag.String("authorized-keys-file", "", "Authorized key file")
+
 	hostname := flag.String("hostname", "", "Hostname to set for the config")
 	metadataScript := flag.String("metadata-script", "", "Path to metadata shell script source")
-	indent := flag.Bool("indent", true, "Indent output with 2 spaces")
+
 	mountDevice := flag.String("mount-device", "", "The device to add to mounts and filesystems. An empty value omits partitions and filesystems")
-	mountPartitionCount := flag.Int("mount-partiition-count", 2, "The number of partitions to create")
-	mountPartitionSize := flag.Int("mount-partition-size", 500, "The size (in GB) of partitions to create")
+	mountPartitionSizes := flag.IntSlice("mount-partition-size", []int{}, "A list of partition sizes in GB. Partitions will be created in the order they are supplied")
 	mountRoot := flag.String("mount-root", "/mnt/csi-local-storage", "The directory to mount secondary partitions into")
 	fsType := flag.String("fs-type", "ext4", "The filesystem type")
+
+	disabledUnits := flag.StringSlice("disabled-units", []string{"tcsd.service"}, "Systemd untis to disable")
 
 	flag.Parse()
 
@@ -35,13 +39,14 @@ func main() {
 		opts = append(opts, spark.NewUserOpt(*user, *groups, *authorizedKeys))
 	}
 
+	opts = append(opts, spark.DisableUnitsConfigOpt(*disabledUnits...))
+
 	if *mountDevice != "" {
 		opts = append(opts, spark.NewDiskOpt(
 			*mountRoot,
 			*fsType,
 			*mountDevice,
-			*mountPartitionCount,
-			*mountPartitionSize,
+			*mountPartitionSizes,
 		))
 	}
 

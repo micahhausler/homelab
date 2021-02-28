@@ -14,18 +14,30 @@ To manually create the disk partitions and mount them, you can run:
 # Partition disk manually
 sudo parted -s -a opt --script /dev/sda \
     mklabel gpt \
-    mkpart primary 0 500G \
-    mkpart primary 500GB 1000GB \
+    mkpart primary 0 10G \
+    mkpart primary 10G 20G \
+    mkpart primary 20G 35G \
+    mkpart primary 35G 50G \
+    mkpart primary 50G 75G \
+    mkpart primary 75G 100G \
+    mkpart primary 100G 150G \
+    mkpart primary 150G 200G \
+    mkpart primary 200G 250G \
+    mkpart primary 250G 350G \
+    mkpart primary 350G 500G \
+    mkpart primary 500G 1000G \
     align-check min 1 
-# Make file systems
-sudo mkfs -t ext4 /dev/sda1
-sudo mkfs -t ext4 /dev/sda2
 
-# Create mount points
-sudo mkdir -p /mnt/csi-local-storage/{p1,p2}
+for i in {1..12} ; do
+  # Create file system
+  sudo mkfs -t ext4 /dev/sda$i
+  # Create mount points
+  sudo mkdir -p /mnt/csi-local-storage/p$i
+  # mount partition
+  sudo mount /dev/sda$i /mnt/csi-local-storage/p$i
+done
+
 # TODO: add to mtab/fstab
-sudo mount /dev/sda1 /mnt/csi-local-storage/p1
-sudo mount /dev/sda2 /mnt/csi-local-storage/p2
 ```
 
 ## Install the Kubernetes CSI local static provisioner
