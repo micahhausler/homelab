@@ -11,22 +11,22 @@
 
 ## TODOs
 
-- [ ]. Research using [AWS ACM Private CA][acm-pca]
-   for enabling SecureBoot ([Debian docs][debian-secure-boot]
+- [ ] Research using [AWS ACM Private CA][acm-pca]
+   for enabling SecureBoot ([Debian docs][debian-secure-boot])
 - [x] Write metadata gather script that writes to files on disk
-      - [x] Get ipv4 addr
-      - [x] Get ipv6 addr
-      - [x] Get ipv6 delegated range
-      - [x] Get hostname
+  - [x] Get ipv4 addr
+  - [x] Get ipv6 addr
+  - [x] Get ipv6 delegated range
+  - [x] Get hostname
 - [ ] Invoke metadata script in oneshot systemd unit
 - [ ] Get `kube{let,ctl,adm}`, write to `/opt/bin/`
 - [ ] Get CNI binaries, write to `/opt/cni/bin`
 - [ ] Write Kubelet systemd unit
-    - [ ] Refer to EKS AMI [kubelet.service][kubelet.service] and
+  - [ ] Refer to EKS AMI [kubelet.service][kubelet.service] and
        [bootstrap.sh][bootstrap.sh] for args
 - [x] Compile all units into ignition (and a script/tool that gathers them? A CDK
     for ignition would be sweet)
-    - [x] See [sparkplug](./sparkplug/)
+  - [x] See [sparkplug](./sparkplug/)
 - [ ] Figure out continerd-only setup for flatcar (documented one didn't seem to
    work). Maybe source above metadata + one or two args?
 - [ ] Write kubeadm templated config
