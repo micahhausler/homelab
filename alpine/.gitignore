@@ -1,1 +1,3 @@
 alpine-minirootfs-*.tar.gz
+.token_seed
+.token_seed.lock

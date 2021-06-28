@@ -23,7 +23,7 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: spec.nodeName
-        image: public.ecr.aws/micahhausler/tailscale:v1.2.10
+        image: public.ecr.aws/micahhausler/tailscale:v1.6.0
         imagePullPolicy: IfNotPresent
         name: tailscale
         resources: {}

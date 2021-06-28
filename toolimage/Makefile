@@ -1,6 +1,6 @@
 BASE_IMAGE?=public.ecr.aws/micahhausler/alpine:3.13.5
-IMAGE_REPO?=public.ecr.aws/micahhausler/tailscale
-IMAGE_TAG?=v1.6.0
+IMAGE_REPO?=public.ecr.aws/micahhausler/toolimage
+IMAGE_TAG?=0.1
 IMAGE?=${IMAGE_REPO}:${IMAGE_TAG}
 
 image:
@@ -12,8 +12,6 @@ image:
 push: image
 	docker push ${IMAGE}
 
-all: image
-
 buildkit:
 	buildctl \
 		build \
@@ -24,5 +22,7 @@ buildkit:
 		--local context=. \
 		--output type=image,oci-mediatypes=true,name=${IMAGE},push=true
 		#--output type=oci,dest=/dev/null
+
+all: image
 
 .PHONY: image all push

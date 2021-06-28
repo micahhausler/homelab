@@ -1,10 +1,10 @@
-ARG BASE_IMAGE=public.ecr.aws/micahhausler/alpine:3.13.0
+ARG BASE_IMAGE=public.ecr.aws/micahhausler/alpine:3.13.5
 FROM $BASE_IMAGE
 
 MAINTAINER Micah Hausler <hausler.m@gmail.com>
 
-ARG TAILSCALE_VERSION=1.2.10
-ARG ARCH=amd64
+ARG TAILSCALE_VERSION=1.6.0
+ARG TARGETARCH
 
 # Install samba
 RUN apk --no-cache --no-progress upgrade && \
@@ -15,10 +15,10 @@ RUN apk --no-cache --no-progress upgrade && \
         wget \
         tini \
     && rm -rf /tmp/* && \
-    wget https://pkgs.tailscale.com/stable/tailscale_${TAILSCALE_VERSION}_${ARCH}.tgz && \
-    tar xvf tailscale_${TAILSCALE_VERSION}_${ARCH}.tgz && \
-    mv tailscale_${TAILSCALE_VERSION}_${ARCH}/tailscaled /usr/sbin/tailscaled && \
-    mv tailscale_${TAILSCALE_VERSION}_${ARCH}/tailscale /usr/sbin/tailscale && \
-    rm -rf tailscale_${TAILSCALE_VERSION}_${ARCH} tailscale_${TAILSCALE_VERSION}_${ARCH}.tgz
+    wget --progress dot:mega https://pkgs.tailscale.com/stable/tailscale_${TAILSCALE_VERSION}_${TARGETARCH}.tgz && \
+    tar xvf tailscale_${TAILSCALE_VERSION}_${TARGETARCH}.tgz && \
+    mv tailscale_${TAILSCALE_VERSION}_${TARGETARCH}/tailscaled /usr/sbin/tailscaled && \
+    mv tailscale_${TAILSCALE_VERSION}_${TARGETARCH}/tailscale /usr/sbin/tailscale && \
+    rm -rf tailscale_${TAILSCALE_VERSION}_${TARGETARCH} tailscale_${TAILSCALE_VERSION}_${TARGETARCH}.tgz
 
 ENTRYPOINT ["/usr/sbin/tailscaled"]
