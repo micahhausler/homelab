@@ -1,10 +1,10 @@
-ARG BASE_IMAGE=public.ecr.aws/micahhausler/alpine:3.13.0
+ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
 MAINTAINER Micah Hausler <hausler.m@gmail.com>
 
-ARG SAMBA_VERSION=4.13.3
-ARG SAMBA_RELEASE=r1
+ARG SAMBA_VERSION
+ARG SAMBA_RELEASE=r0
 
 # Install samba
 RUN apk --no-cache --no-progress upgrade && \
@@ -13,8 +13,8 @@ RUN apk --no-cache --no-progress upgrade && \
         less \
         man-db \
         man-pages \
-        samba=$SAMBA_VERSION-$SAMBA_RELEASE \
-        samba-doc=$SAMBA_VERSION-$SAMBA_RELEASE \
+        samba \
+        samba-doc \
         shadow \
         tini \
         tzdata && \

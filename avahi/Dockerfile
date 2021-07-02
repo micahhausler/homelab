@@ -1,9 +1,9 @@
-ARG BASE_IMAGE=public.ecr.aws/micahhausler/alpine:3.13.0
+ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
 MAINTAINER Micah Hausler <hausler.m@gmail.com>
 
-ARG AVAHI_VERSION=0.8
+ARG AVAHI_VERSION
 ARG AVAHI_RELEASE=r2
 
 RUN apk add --no-cache \
