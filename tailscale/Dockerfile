@@ -1,9 +1,9 @@
-ARG BASE_IMAGE=public.ecr.aws/micahhausler/alpine:3.13.5
+ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
 MAINTAINER Micah Hausler <hausler.m@gmail.com>
 
-ARG TAILSCALE_VERSION=1.6.0
+ARG TAILSCALE_VERSION
 ARG TARGETARCH
 
 # Install samba
