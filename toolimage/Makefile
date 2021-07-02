@@ -1,28 +1,22 @@
-BASE_IMAGE?=public.ecr.aws/micahhausler/alpine:3.13.5
+BASE_IMAGE?=public.ecr.aws/micahhausler/alpine:3.14.0
 IMAGE_REPO?=public.ecr.aws/micahhausler/toolimage
-IMAGE_TAG?=0.1
+IMAGE_TAG?=0.2
 IMAGE?=${IMAGE_REPO}:${IMAGE_TAG}
 
+IMAGE_OUTPUT=--load
+IMAGE_PLATFORM=linux/amd64
+ifeq ($(PUBLISH),true)
+	IMAGE_OUTPUT=--push
+	IMAGE_PLATFORM=linux/aarch64,linux/amd64,linux/arm/v7
+endif
+.PHONY: image
 image:
-	docker build \
-		--build-arg BASE_IMAGE=${BASE_IMAGE} \
-		-t ${IMAGE} \
+	docker buildx build \
+		--platform=$(IMAGE_PLATFORM) \
+		--build-arg BASE_IMAGE=$(BASE_IMAGE) \
+		$(IMAGE_OUTPUT) \
+		--tag ${IMAGE} \
 		.
 
-push: image
-	docker push ${IMAGE}
-
-buildkit:
-	buildctl \
-		build \
-		--frontend dockerfile.v0 \
-		--opt platform=linux/aarch64,linux/amd64,linux/arm/v7 \
-		--opt build-arg:BASE_IMAGE=$(BASE_IMAGE) \
-		--local dockerfile=./ \
-		--local context=. \
-		--output type=image,oci-mediatypes=true,name=${IMAGE},push=true
-		#--output type=oci,dest=/dev/null
-
+.PHONY: all
 all: image
-
-.PHONY: image all push
