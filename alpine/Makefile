@@ -15,7 +15,7 @@ ${ALPINE_TAR}.sha256:
 		--domains dl-cdn.alpinelinux.org \
 		${SHA_URL}
 
-verify-sha: ${ALPINE_TAR}.sha256
+verify-sha: ${ALPINE_TAR}.sha256 ${ALPINE_TAR}
 	sha256sum -c ${ALPINE_TAR}.sha256
 
 ${ALPINE_TAR}:
@@ -25,7 +25,7 @@ ${ALPINE_TAR}:
 		--domains dl-cdn.alpinelinux.org \
 		${URL}
 
-image: ${ALPINE_TAR} verify-sha
+image: ${ALPINE_TAR} 
 	docker build \
 		--build-arg TARBALL=${ALPINE_TAR} \
 		-t ${IMAGE} \

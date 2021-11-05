@@ -1,0 +1,59 @@
+name: alpine-image-build
+
+on:
+  push:
+    branches:
+      - 'main'
+
+jobs:
+  docker:
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@8053174404968575ac1dd102dcb1109d2fe6d9ea
+        #uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::133499322554:role/homelab-github-actions
+          aws-region: us-east-1
+          web-identity-token-file: /tmp/awscreds
+      -
+        name: Get caller identity
+        run: aws sts get-caller-identity
+      -
+        name: Login to Public ECR
+        uses: docker/login-action@v1
+        with:
+          registry: public.ecr.aws
+          #username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          #password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        env:
+          AWS_REGION: us-east-1
+      #-
+      #  name: Login to DockerHub
+      #  uses: docker/login-action@v1
+      #  with:
+      #    username: ${{ secrets.DOCKERHUB_USERNAME }}
+      #    password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Get tarball
+        run: make -C alpine verify-sha
+      -
+        name: Build
+        uses: docker/build-push-action@v2
+        with:
+          context: ./alpine/
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: public.ecr.aws/micahhausler/alpine:latest
