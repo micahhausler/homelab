@@ -25,6 +25,11 @@ jobs:
         run: |
           curl -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL"  | jq -r '.value' > /tmp/web_identity_token_file
       -
+        name: Debug
+        run: |
+          ls -al /tmp/
+          cat /tmp/web_identity_token_file
+      -
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@8053174404968575ac1dd102dcb1109d2fe6d9ea
         #uses: aws-actions/configure-aws-credentials@v1
