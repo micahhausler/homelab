@@ -20,6 +20,8 @@ jobs:
       -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+      - name: debug
+        run: cat /tmp/awscreds
       -
         name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@8053174404968575ac1dd102dcb1109d2fe6d9ea
