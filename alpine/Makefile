@@ -48,7 +48,7 @@ DIGESTS     = $(foreach TAR,$(TARBALLS),$(TAR).sha256)
 DOCKER_TARS = $(foreach TARBALL,$(TARBALLS),$(subst x86_,amd,$(subst aarch,arm,$(TARBALL))))
 $(DOCKER_TARS): $(DIGESTS)
 
-tarballs: $(TARBALLS)
+tarballs: $(DOCKER_TARS)
 
 define DOCKER_BUILD
 # $1 = arches
