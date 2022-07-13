@@ -54,6 +54,6 @@ jobs:
         with:
           context: ./alpine/
           platforms: linux/amd64,linux/arm64
-          build-args: 3.16.0
+          build-args: ALPINE_VERSION=3.16.0
           push: false
           tags: public.ecr.aws/micahhausler/alpine:latest
