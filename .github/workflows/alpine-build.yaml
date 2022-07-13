@@ -47,7 +47,7 @@ jobs:
       #    password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Get tarball
-        run: cd alpine && make tarballs
+        run: make -C alpine tarballs && pwd && ls -al && ls -al alpine
       -
         name: Build
         uses: docker/build-push-action@v3
