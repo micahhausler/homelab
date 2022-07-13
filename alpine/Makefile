@@ -1,42 +1,83 @@
-ALPINE_VERSION=3.13
-ALPINE_POINT=0
-PLATFORM=x86_64
-ALPINE_TAR=alpine-minirootfs-${ALPINE_VERSION}.${ALPINE_POINT}-${PLATFORM}.tar.gz
-URL=https://dl-cdn.alpinelinux.org/alpine/v${ALPINE_VERSION}/releases/${PLATFORM}/${ALPINE_TAR}
-SHA_URL=${URL}.sha256
+ALPINE_VERSION ?= 3.16
+ALPINE_POINT   ?= 0
 
-IMAGE_REPO?=public.ecr.aws/micahhausler/alpine
-IMAGE?=${IMAGE_REPO}:${ALPINE_VERSION}.${ALPINE_POINT} 
+ARCHES = x86_64 aarch64
 
-${ALPINE_TAR}.sha256:
-	wget \
-		--progress dot \
-		--max-redirect=0 \
-		--domains dl-cdn.alpinelinux.org \
-		${SHA_URL}
+IMAGE_REPO ?= public.ecr.aws/micahhausler/alpine
+IMAGE      ?= $(IMAGE_REPO):$(ALPINE_VERSION).$(ALPINE_POINT)
 
-verify-sha: ${ALPINE_TAR}.sha256 ${ALPINE_TAR}
-	sha256sum -c ${ALPINE_TAR}.sha256
+TARBALL = alpine-minirootfs-$(ALPINE_VERSION).$(ALPINE_POINT)-$(ARCH).tar.gz
+DIGEST  = $(TARBALL).sha256
+URL     = https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/releases/$(ARCH)/$(TARBALL)
 
-${ALPINE_TAR}:
+define ARCH_RULES
+ARCH = $(1)
+
+# target-specific variable overrides
+$$(subst x86_,amd,$$(subst aarch,arm,$$(TARBALL))) $$(TARBALL) $$(DIGEST): TARBALL=alpine-minirootfs-$(ALPINE_VERSION).$(ALPINE_POINT)-$(ARCH).tar.gz
+$$(TARBALL) $$(DIGEST): DIGEST=$$(TARBALL).sha256
+$$(TARBALL) $$(DIGEST): URL = https://dl-cdn.alpinelinux.org/alpine/v$(ALPINE_VERSION)/releases/$(ARCH)/$$(TARBALL)
+
+$$(TARBALL): $$(DIGEST)
 	wget \
 		--progress dot:mega \
 		--max-redirect=0 \
 		--domains dl-cdn.alpinelinux.org \
-		${URL}
+		$$(URL)
+	@touch $$(TARBALL)
+	sha256sum -c $$(DIGEST)
 
-image: ${ALPINE_TAR} 
-	docker build \
-		--build-arg TARBALL=${ALPINE_TAR} \
-		-t ${IMAGE} \
-		.
+# docker-friendly arch name
+$$(subst x86_,amd,$$(subst aarch,arm,$$(TARBALL))): $$(TARBALL)
+	if [ -f $$@ ]; then rm $$@; fi
+	ln -s $$(TARBALL) $$@
 
+$$(DIGEST): 
+	wget \
+		--progress dot \
+		--max-redirect=0 \
+		--domains dl-cdn.alpinelinux.org \
+		$$(URL).sha256
+	@touch $$(DIGEST)
+
+endef
+$(foreach ARCH, $(ARCHES), $(eval $(call ARCH_RULES,$(ARCH)) ))
+
+TARBALLS    = $(foreach ARCH,$(ARCHES),$(TARBALL))
+DIGESTS     = $(foreach TAR,$(TARBALLS),$(TAR).sha256)
+DOCKER_TARS = $(foreach TARBALL,$(TARBALLS),$(subst x86_,amd,$(subst aarch,arm,$(TARBALL))))
+$(DOCKER_TARS): $(DIGESTS)
+
+define DOCKER_BUILD
+# $1 = arches
+# $2 = alpine version
+# $3 = output format
+docker buildx build \
+	--platform $(1) \
+	--build-arg ALPINE_VERSION=$(2) \
+	--tag $(IMAGE) \
+	-o type=$(3) \
+	.
+endef
+
+.PHONY: image
+image: DOCKER_ARCHES = $(subst x86_,amd,linux/$(subst aarch,arm,$(shell uname -m)))
+image: OUTPUT=docker
+image: $(DOCKER_TARS)
+	$(call DOCKER_BUILD,$(DOCKER_ARCHES),$(ALPINE_VERSION).$(ALPINE_POINT),$(OUTPUT))
+
+null  :=
+space := $(null) #
+comma := ,
+.PHONY: push
+push: DOCKER_ARCHES = $(subst $(space),$(comma),$(foreach ARCH,$(ARCHES),$(subst x86_,amd,linux/$(subst aarch,arm,$(ARCH)))))
+push: OUTPUT=registry
+push:
+	$(call DOCKER_BUILD,$(DOCKER_ARCHES),$(ALPINE_VERSION).$(ALPINE_POINT),$(OUTPUT))
+
+.PHONY: clean
 clean:
-	rm  ${ALPINE_TAR}
+	rm alpine-minirootfs-*.tar.gz
 
-push: image
-	docker push ${IMAGE}
-
+.PHONY: all
 all: image
-
-.PHONY: image all verify-sha clean push

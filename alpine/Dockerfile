@@ -1,7 +1,8 @@
 FROM scratch
 
-ARG TARBALL
+ARG ALPINE_VERSION
+ARG TARGETARCH
 
-ADD $TARBALL /
+ADD alpine-minirootfs-${ALPINE_VERSION}-${TARGETARCH}.tar.gz /
 
 CMD ["/bin/sh"]

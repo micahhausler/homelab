@@ -1,1 +1,4 @@
 alpine-minirootfs-*.tar.gz
+.dockerenv
+.token_seed*
+
