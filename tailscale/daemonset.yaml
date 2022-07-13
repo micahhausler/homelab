@@ -28,7 +28,11 @@ spec:
         name: tailscale
         resources: {}
         securityContext:
-          privileged: true
+          privileged: false
+          capabilities:
+            add:
+              - NET_ADMIN
+              - SYS_MODULE
         terminationMessagePath: /dev/termination-log
         terminationMessagePolicy: File
         volumeMounts:
@@ -36,6 +40,8 @@ spec:
           name: var-lib-tailscale
         - mountPath: /run/tailscale
           name: run-tailscale
+        - mountPath: /dev
+          name: dev
       dnsPolicy: ClusterFirst
       hostNetwork: true
       nodeSelector:
@@ -51,6 +57,10 @@ spec:
         operator: Exists
       - operator: Exists
       volumes:
+      - hostPath:
+          path: /dev
+          type: DirectoryOrCreate
+        name: dev
       - hostPath:
           path: /run/tailscale
           type: DirectoryOrCreate
